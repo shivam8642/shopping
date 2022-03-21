@@ -92,6 +92,7 @@ def deleteAccount(request):
     user = User.objects.filter(id=current_user.id)
     user.delete()
     user=Address.objects.filter(user_id=current_user.id).delete()
+    user=Cart.objects.filter(user_id=current_user.id).delete()
     messages.info(request,'User has been deleted')
     return redirect("login")
 
