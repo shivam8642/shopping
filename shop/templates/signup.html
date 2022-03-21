@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+<div>
+	<section id="form"><!--form-->
+		<div class="container">
+			<div class="row">
+				<div class="col-sm-4">
+					<div class="signup-form"><!--sign up form-->
+						<h2>New User Signup!</h2>
+						<form action="" method="POST" >
+						     {% csrf_token %}
+							 {%for data in form%}
+                             {{data.label_tag}} {{data}} {{data.errors|striptags}}<br>
+                             {%endfor%}
+							<button type="submit" name="submit" value="submit" class="btn btn-default">Signup</button>
+						</form>
+						{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
+    {% endfor %}
+</ul>
+{% endif %}
+					</div><!--/sign up form-->
+				</div>
+			</div>
+		</div>
+	</section><!--/form-->
+	
+	</div>
+	{% endblock %}

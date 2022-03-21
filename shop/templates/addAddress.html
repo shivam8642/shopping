@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+<div>
+	<section id="form"><!--form-->
+		<div class="container">
+			<div class="row">
+				<div class="col-sm-4">
+					<div class="signup-form"><!--sign up form-->
+						<form action="/addAddress" method="POST">
+						    {% csrf_token %}
+							<input type="text" placeholder="First Name" name="first_name" id="first_name">
+							<input type="text" placeholder="Last Name " name="last_name" id="last_name">
+							<input type="text" placeholder="Enter Pincode" name="pincode" id="pincode">
+							<input type="text" placeholder="Address" name="address" id="address">
+							<select id="state" name="state">
+							<option value="" selected="selected">Select state </option> <br>
+							</select><br> <br>
+                            <select name="city" id="city">
+                            <option value="" selected="selected">Select city</option>
+                            </select><br> <br>
+							<input type="text" placeholder="Mobile Number" name="mobile_no" id="mobile_no">
+							<button type="submit" name="submit" id="add_address" value="submit" class="btn btn-default">Sumbit</button>
+						</form>
+						{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
+    {% endfor %}
+</ul>
+{% endif %}
+					</div><!--/sign up form-->
+				</div>
+			</div>
+		</div>
+	</section><!--/form-->
+	
+	</div>
+
+    {%block javascript%}
+<script>
+	
+
+	$("#add_address").click(function(){
+		event.preventDefault();
+		console.log("hello")
+		var first_name = $('#first_name').val();
+		var last_name = $('#last_name').val();
+		var address = $('#address').val()
+		var pincode = $('#pincode').val();
+		var mobile_no = $('#mobile_no').val();
+		var state = $('#state').val();
+		var city = $('#city').val();
+	
+		$(".error").remove();
+		if (first_name.length == '')  {
+		  $('#first_name').after('<span class="error">This field is required</span>');
+		}
+		
+		else if (last_name.length == '')  {
+		  $('#last_name').after('<span class="error">This field is required</span>');
+		}
+		
+		else if (pincode.length == '')  {
+		  $('#pincode').after('<span class="error">This field is required</span>');
+		}
+		 else if (pincode.length < 6 || pincode.length >6)  {
+		  $('#pincode').after('<span class="error">Invalid pinode</span>');
+		  $('#pincode').focus()
+		}
+		else if (address.length == '')  {
+			$('#address').after('<span class="error">This field is required</span>');
+		}
+		  else if (state.length == '')  {
+		  $('#state').after('<span class="error">This field is required</span>');
+		}
+		 else if (mobile_no.length == '')  {
+		  $('#mobile_no').after('<span class="error">This field is required</span>');
+		}
+		 else if (mobile_no.length < 10 || mobile_no.length > 10)  {
+		  $('#mobile_no').after('<span class="error">Mobile number can be 10 digits</span>');
+		  $('#mobile_no').focus()
+		}  
+		else {
+	const jsonData = "{{formData|escapejs}}";
+	var id = null;
+	if(jsonData){		
+	var data = JSON.parse(jsonData);
+	 id = data[0].pk;
+	}
+		mydata={
+			first_name:first_name,
+			last_name:last_name,
+			address:address,
+			pincode:pincode,
+			mobile_no:mobile_no,
+			state:state,
+			city:city,
+			modifyId: id
+		}
+		
+
+		$.ajax({
+			data: mydata, // get the form data
+			type: "POST",// GET or POST
+			url: '{% url "addAddress" %}',
+			dataType:'json',
+			success: function(response) { // on success..
+				if(response.status === "success"){  
+				   alert(response.message) 
+				   window.location.href = 'account';
+				  }
+				else{
+                    alert("Add Address Not successfully")
+                }
+			}
+		})
+		}
+	})
+
+	var locations = {
+        'Punjab': ['Amritsar','Mohali','Fazilka','Ludhiana'],
+        'haryana': ['Ambala','sirsa','Gurgaon'],
+        'Delhi': ['Ashok vihar','Rohini','Carol bagh'],
+        'Chandigarh': ['Chandigarh']
+    }
+		
+	window.onload = function() {
+	var data = JSON.parse('{{ formData|safe }}');
+    let obj = data[0].fields;
+   $('#first_name').val(obj.first_name)
+   $('#last_name').val(obj.last_name)
+   $('#address').val(obj.address)
+   $('#pincode').val(obj.pincode)
+   $('#state').val(obj.state)
+   $('#city').val(obj.city)
+   $('#mobile_no').val(obj.mobile_no)
+   onStateChange();
+  
+  }
+
+  var state = document.getElementById("state");
+		for (var x in locations) {
+		  state.options[state.options.length] = new Option(x);
+		}
+		console.log({state})
+		state.onchange = function() {
+				onStateChange();
+		  }
+	
+	function onStateChange () {
+		state = $('#state').val()
+		  $('#city').empty();
+		  cityArr = locations[state];
+		  var city = document.getElementById("city");
+			cityArr.map(function(item, index){
+				city.add(new Option(item, item));
+		 })
+	  }
+</script>
+
+{%endblock%}
+{%endblock%}
