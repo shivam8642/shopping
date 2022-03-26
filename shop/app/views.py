@@ -21,6 +21,7 @@ stripe.api_key = "sk_test_51JCHcMSCnbkK9gD73iWxvZrwtRXRY6qT8ohzlGjtcKtOAB2yQ2hZq
 def index(request):
     productList=Product.objects.all().values() 
     slider=Slider.objects.all().values()
+    print(id)
     return render(request,"index.html",{'product':productList,'slider':slider})
 
 def signup(request):
@@ -61,6 +62,7 @@ def logout(request):
 def account(request):
     if request.user.is_authenticated:
         current_user = request.user
+        
         updateProfileform=MyUserChangeForm(instance=request.user)
         dataset= Address.objects.filter(user_id=current_user.id)
         return render(request, 'account.html',{'updateData': updateProfileform,'dataset':dataset})      
