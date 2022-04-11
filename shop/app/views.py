@@ -62,7 +62,6 @@ def logout(request):
 def account(request):
     if request.user.is_authenticated:
         current_user = request.user
-        
         updateProfileform=MyUserChangeForm(instance=request.user)
         dataset= Address.objects.filter(user_id=current_user.id)
         return render(request, 'account.html',{'updateData': updateProfileform,'dataset':dataset})      
@@ -79,6 +78,7 @@ def updateProfile(request):
         'is_taken': User.objects.filter(username__iexact=username).exclude(id= current_user.id).exists(),
         'is_email_taken':User.objects.filter(email=email).exclude(id= current_user.id).exists()
     } 
+    print(data)
     if request.user.is_authenticated and request.method == 'POST' and form.is_valid() and data['is_taken'] == False and data['is_email_taken'] == False:
 
         form.save()
@@ -118,7 +118,7 @@ def password_change(request):
 
 def detail(request):
     if request.user.is_authenticated:
-     id_call= request.GET.get('id')
+     id_call= request.GET['id']
      list=Product.objects.filter(id=id_call).values() 
      return render(request,"detail.html",{'product':list[0]})
     else:
@@ -143,7 +143,8 @@ def cartCreate(request):
 
 def cart(request):
     current_user = request.user
-    list =Cart.objects.select_related('product').filter(user_id = current_user.id)
+    list =Cart.objects.prefetch_related('product').filter(user_id = current_user.id)
+    print(serializers.serialize("json", list))
     if len(list) > 0:
      total = 0
      for obj in list:
@@ -251,7 +252,7 @@ def checkoutSession(request):
     order.price = int(obj.price)
     order.quantity = obj.quantity
     order.user_id = current_user.id
-    order.status = 'Cancel'
+    order.status = 'Pending'
     order.created_at = datetime.date.today()
     order.address_id=addressId
     order.save()

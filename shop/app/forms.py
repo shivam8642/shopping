@@ -13,7 +13,7 @@ class Signup(UserCreationForm):
     password2 = forms.CharField(label='Confirm password',widget=forms.PasswordInput)
     class Meta(UserCreationForm):
        model = User
-       fields = ('username','first_name','last_name','email')
+       fields = ('username','first_name','last_name','email','password1','password2')
 
     def clean_email(self):
       email=self.cleaned_data['email']
