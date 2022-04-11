@@ -143,7 +143,7 @@ def cartCreate(request):
 
 def cart(request):
     current_user = request.user
-    list =Cart.objects.prefetch_related('product').filter(user_id = current_user.id)
+    list =Cart.objects.select_related('product').filter(user_id = current_user.id)
     print(serializers.serialize("json", list))
     if len(list) > 0:
      total = 0
